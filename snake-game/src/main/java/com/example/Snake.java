@@ -112,6 +112,7 @@ public class Snake extends JComponent implements GameObject {
 			result.add(new Square(squares[i].x, squares[i].y));
 		}
 		return result;
+		// Zmena jestli se ukaze naGITITIT§§§
 	}
     
     public void move() {

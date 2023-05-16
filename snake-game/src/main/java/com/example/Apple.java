@@ -1,13 +1,10 @@
 package com.example;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import java.util.Random;
@@ -34,18 +31,13 @@ public class Apple extends JComponent implements GameObject
 		setRandomLocation();
 	}
 	
-	private void loadImages() {
-
-        /*ImageIcon iia = new ImageIcon("src/resources/apple.png");
-        img = iia.getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH);*/
-        
+	private void loadImages() {        
         img = Load.squareImage("src/resources/apple.png",  DOT_SIZE);
     }
 	
 	public void setRandomLocation() {
 		x = random.nextInt(rangeX);
 		y = random.nextInt(rangeY);
-		System.out.print(Integer.toString(x) + "§§" + Integer.toString(y));
 	}
 	
 	@Override
@@ -57,8 +49,6 @@ public class Apple extends JComponent implements GameObject
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //g.setColor(Color.WHITE);
-        //g.fillRect(10, 10, 20000, 15000); // Specify the rectangle's position and dimensions
         g.drawImage(img, x * DOT_SIZE, y * DOT_SIZE, this);
     }
 	

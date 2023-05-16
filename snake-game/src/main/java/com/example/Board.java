@@ -6,38 +6,33 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.sound.sampled.Clip;
 
 public class Board extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1L;
-	private static int B_WIDTH = 300;
-    private static int B_HEIGHT = 300;
-    public static int DOT_SIZE = 25;
-    private static int DELAY = 140;
+	public static final int B_WIDTH = 600;
+    public static final int B_HEIGHT = 300;
+    public static final int DOT_SIZE = 30;
+    private static int DELAY = 140; // Inverted value of game speed
 
-    private int apple_x;
-    private int apple_y;
 
     private boolean inGame = true;
 
     private Timer timer;
-    
-    private Image apple;
-    
-    Apple apple2;
+    Apple apple;
     Snake snake;
+    Snake snake2;
+    Clip errorSound;
 
     public Board() {
-        
         initBoard();
     }
     
@@ -48,22 +43,27 @@ public class Board extends JPanel implements ActionListener {
         setFocusable(true);
 
         this.setLayout(null);
-        snake = new Snake(DOT_SIZE, B_WIDTH, B_HEIGHT);
+        snake = new Snake();
         snake.setBounds(0, 0, B_WIDTH, B_HEIGHT);
         this.add(snake);
-        apple2 = new Apple(B_WIDTH / DOT_SIZE, B_HEIGHT / DOT_SIZE);
-        apple2.setBounds(0, 0, B_WIDTH, B_HEIGHT);
-        this.add(apple2, BorderLayout.NORTH);
+        snake2 = new Snake();
+        snake2.setBounds(0, 0, B_WIDTH, B_HEIGHT);
+        this.add(snake2);
+        apple = new Apple(B_WIDTH / DOT_SIZE, B_HEIGHT / DOT_SIZE);
+        apple.setBounds(0, 0, B_WIDTH, B_HEIGHT);
+        this.add(apple, BorderLayout.NORTH);
         
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
         initGame();
     }
 
+    
     private void initGame() {
-        
-        System.out.println("initializátor");
+    	errorSound = Load.sound("src/resources/WinXPError.wav");
         timer = new Timer(DELAY, this);
         timer.start();
+        
+        snake2.initSnake(snake.getDirection(), 6, 6);
     }
 
     @Override
@@ -99,15 +99,9 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void checkApple() {
-
-        /*if ((snake.x[0] == apple_x) && (snake.y[0] == apple_y)) {
-
-            snake.AddDot();
-            locateApple();
-        }*/
-        if (snake.CheckCollisions(apple2)) {
+        if (snake.CheckCollisions(apple)) {
         	snake.AddDot();
-        	apple2.setRandomLocation();
+        	apple.setRandomLocation();
         }
     }
 
@@ -116,6 +110,7 @@ public class Board extends JPanel implements ActionListener {
         //inGame = snake.checkCollision();
         
         if (snake.CheckCollisions(snake)) {
+        	playSound(errorSound);
         	inGame = false;
         }
         if (!inGame) {
@@ -131,10 +126,17 @@ public class Board extends JPanel implements ActionListener {
             checkApple();
             checkCollision();
             snake.move();
-            
+            snake2.move();
         }
 
         repaint();
+    }
+    
+    private static void playSound(Clip clip) {
+        if (clip != null && !clip.isRunning()) {
+            clip.setFramePosition(0);  // Rewind to the beginning of the sound
+            clip.start();  // Start playing the sound
+        }
     }
 
     private class TAdapter extends KeyAdapter {
@@ -146,18 +148,25 @@ public class Board extends JPanel implements ActionListener {
 
             if ((key == KeyEvent.VK_LEFT) && (snake.getDirection() != Direction.Right)) {
                 snake.ChangeDirection(Direction.Left);
+                snake2.ChangeDirection(Direction.Left);
             }
-
             if ((key == KeyEvent.VK_RIGHT) && (snake.getDirection() != Direction.Left)) {
             	snake.ChangeDirection(Direction.Right);
+            	snake2.ChangeDirection(Direction.Right);
             }
-
             if ((key == KeyEvent.VK_UP) && (snake.getDirection() != Direction.Down)) {
             	snake.ChangeDirection(Direction.Up);
+            	snake2.ChangeDirection(Direction.Up);
             }
-
             if ((key == KeyEvent.VK_DOWN) && (snake.getDirection() != Direction.Up)) {
             	snake.ChangeDirection(Direction.Down);
+            	snake2.ChangeDirection(Direction.Down);
+            }
+            if (key == KeyEvent.VK_SPACE) {
+            	/*inGame = true;
+            	initBoard();
+            	initGame();
+            	snake.initSnake(Direction.Left, 5, 5);*/
             }
         }
     }

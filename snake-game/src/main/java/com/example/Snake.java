@@ -1,13 +1,9 @@
 package com.example;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 
@@ -21,13 +17,6 @@ enum Direction {
 
 public class Snake extends JComponent implements GameObject {
     private static final long serialVersionUID = 1L;
-	private final int DOT_SIZE;
-    private final int B_WIDTH;
-    private final int B_HEIGHT;
-
-    public int[] x;
-    public int[] y;
-    
     public Square[] squares;
     
     
@@ -38,38 +27,46 @@ public class Snake extends JComponent implements GameObject {
     private Image ball;
     private Image head;
 
-    public Snake(int dotSize, int bWidth, int bHeight) {
-        DOT_SIZE = dotSize;
-        B_WIDTH = bWidth;
-        B_HEIGHT = bHeight;
-
-        x = new int[(B_WIDTH * B_WIDTH) / (DOT_SIZE * DOT_SIZE)];
-        y = new int[(B_WIDTH * B_WIDTH) / (DOT_SIZE * DOT_SIZE)];
+    public Snake() {
         
-        squares = new Square[(B_WIDTH * B_WIDTH) / (DOT_SIZE * DOT_SIZE)];
+        squares = new Square[(B_HEIGHT * B_WIDTH) / (DOT_SIZE * DOT_SIZE)];
 
         // Initialize the snake's starting position and direction
         loadImages();
-        initSnake();
+        initSnake(Direction.Left, 5, 5);
     }
 
-    private void initSnake() {
+    public void initSnake(Direction direction, int x, int y) {
         dots = 3;
 
         // Set the initial coordinates for the snake's body
-        for (int z = 0; z < dots; z++) {
-            x[z] = 50 - z * 10;
-            y[z] = 50;
-            
-            squares[z] = new Square(5 - z, 5);
+        for (int i = 0; i < dots; i++) {
+        	switch (direction) {
+        	case Left:
+        		squares[i] = new Square(x + i, y);
+        		break;
+        	case Right:
+        		squares[i] = new Square(x - i, y);
+        		break;
+        	case Down:
+        		squares[i] = new Square(x, y - i);
+        		break;
+        	case Up:
+        		squares[i] = new Square(x, y + i);
+        		break;
+        	default:
+        		squares[i] = new Square(0, 0);
+        		break;
+        	}
         }
         
-        for (int z = dots; z < squares.length; z++) {
-        	squares[z] = new Square(0, 0);
+        // Dont forget to init remaining dots to an arbitrary value
+        for (int i = dots; i < squares.length; i++) {
+        	squares[i] = new Square(0, 0);
         }
 
         // Set the initial direction      
-        direction = Direction.Right;
+        this.direction = direction;
     }
     
     private void loadImages() {        
@@ -96,30 +93,13 @@ public class Snake extends JComponent implements GameObject {
 			result.add(new Square(squares[i].x, squares[i].y));
 		}
 		return result;
-		// Zmena jestli se ukaze naGITITIT§§§
 	}
     
     public void move() {
-        // Move the snake's body segments
-        /*for (int z = dots; z > 0; z--) {
-            x[z] = x[z - 1];
-            y[z] = y[z - 1];
-        }*/
-        
+        // Move the snake's body segments      
         for (int z = dots; z > 0; z--) {
             squares[z] = new Square(squares[z - 1].x, squares[z - 1].y);
         }
-
-        // Move the snake's head based on the current direction
-        /*if (leftDirection) {
-            x[0] -= DOT_SIZE;
-        } else if (rightDirection) {
-            x[0] += DOT_SIZE;
-        } else if (upDirection) {
-            y[0] -= DOT_SIZE;
-        } else if (downDirection) {
-            y[0] += DOT_SIZE;
-        }*/
         
         squares[0].Move(getDirection());
     }
@@ -132,20 +112,12 @@ public class Snake extends JComponent implements GameObject {
     // Override the paintComponent method to render the snake
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        /*for (int z = 0; z < dots; z++) {
-            if (z == 0) {
-                g.drawImage(head, x[z], y[z], this);
+        super.paintComponent(g);        
+        for (int i = 0; i < dots; i++) {
+            if (i == 0) {
+                g.drawImage(head, squares[i].x * DOT_SIZE, squares[i].y * DOT_SIZE, this);
             } else {
-                g.drawImage(ball, x[z], y[z], this);
-            }
-        }*/
-        
-        for (int z = 0; z < dots; z++) {
-            if (z == 0) {
-                g.drawImage(head, squares[z].x * DOT_SIZE, squares[z].y * DOT_SIZE, this);
-            } else {
-                g.drawImage(ball, squares[z].x * DOT_SIZE, squares[z].y * DOT_SIZE, this);
+                g.drawImage(ball, squares[i].x * DOT_SIZE, squares[i].y * DOT_SIZE, this);
             }
         }
     }
@@ -160,30 +132,12 @@ public class Snake extends JComponent implements GameObject {
     
     public void AddDot() {
     	dots++;
+    	System.out.println("Actual score=" + (dots - 3));
     }
     
     public boolean checkCollision() {
 
-    	boolean result = true;
-        /*for (int z = dots; z > 0; z--) {
-
-            if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) {
-                result= false;
-            }
-        }
-        if (y[0] >= B_HEIGHT) {
-        	result = false;
-        }
-        if (y[0] < 0) {
-        	result = false;
-        }
-        if (x[0] >= B_WIDTH) {
-        	result = false;
-        }
-        if (x[0] < 0) {
-        	result = false;
-        }*/
-        
+    	boolean result = true;        
         for (int z = dots; z > 0; z--) {
 
             if ((z > 4) && (squares[0].x == squares[z].x) && (squares[0].y == squares[z].y)) {

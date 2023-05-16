@@ -103,6 +103,10 @@ public class Board extends JPanel implements ActionListener {
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2);
     }
 
+    /**
+     * 
+     * Check collision with apple
+     */
     private void checkApple() {
         if (snake.CheckCollisions(apple)) {
         	snake.AddDot();

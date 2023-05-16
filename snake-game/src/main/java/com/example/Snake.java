@@ -32,11 +32,8 @@ public class Snake extends JComponent implements GameObject {
     
     
     private int dots;
-
-    private boolean leftDirection;
-    private boolean rightDirection;
-    private boolean upDirection;
-    private boolean downDirection;
+    
+    private Direction direction;
     
     private Image ball;
     private Image head;
@@ -71,26 +68,13 @@ public class Snake extends JComponent implements GameObject {
         	squares[z] = new Square(0, 0);
         }
 
-        // Set the initial direction
-        leftDirection = false;
-        rightDirection = true;
-        upDirection = false;
-        downDirection = false;
+        // Set the initial direction      
+        direction = Direction.Right;
     }
     
-    private void loadImages() {
-
-        ImageIcon iid = new ImageIcon("src/resources/dot.png");
-        ball = iid.getImage();
-        
-        if (iid.getImageLoadStatus() == MediaTracker.COMPLETE) {
-            System.out.println("Ball se načetl");
-        } else {
-        	System.out.println("Ball se nenačetl");
-        }
-
-        ImageIcon iih = new ImageIcon("src/resources/head.png");
-        head = iih.getImage();
+    private void loadImages() {        
+        ball = Load.squareImage("src/resources/dot.png",  DOT_SIZE);
+        head = Load.squareImage("src/resources/head.png",  DOT_SIZE);
     }
 
     public boolean CheckCollisions(GameObject other) {
@@ -167,26 +151,11 @@ public class Snake extends JComponent implements GameObject {
     }
     
     public void ChangeDirection(Direction direction) {
-    	leftDirection = false;
-        rightDirection = false;
-        upDirection = false;
-        downDirection = false;
-        
-        switch (direction) {
-        case Left:
-        	leftDirection = true;
-        	break;
-        case Right:
-        	rightDirection = true;
-        	break;
-        case Up:
-        	upDirection = true;
-        	break;
-        case Down:
-        	downDirection = true;
-        	break;
-        	
-        }
+    	this.direction = direction;
+    }
+    
+    public Direction getDirection() {
+    	return direction;
     }
     
     public void AddDot() {
@@ -235,24 +204,6 @@ public class Snake extends JComponent implements GameObject {
         }
         
         return !result;
-    }
-    
-    public Direction getDirection() {
-    	if (leftDirection) {
-    		return Direction.Left;
-    	}
-    	if (rightDirection) {
-    		return Direction.Right;
-    	}
-    	if (upDirection) {
-    		return Direction.Up;
-    	}
-    	if (downDirection) {
-    		return Direction.Down;
-    	}
-    	else {
-    		return Direction.Left;
-    	}
     }
 }
 

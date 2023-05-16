@@ -36,8 +36,10 @@ public class Apple extends JComponent implements GameObject
 	
 	private void loadImages() {
 
-        ImageIcon iia = new ImageIcon("src/resources/apple.png");
-        img = iia.getImage();
+        /*ImageIcon iia = new ImageIcon("src/resources/apple.png");
+        img = iia.getImage().getScaledInstance(DOT_SIZE, DOT_SIZE, Image.SCALE_SMOOTH);*/
+        
+        img = Load.squareImage("src/resources/apple.png",  DOT_SIZE);
     }
 	
 	public void setRandomLocation() {

@@ -21,8 +21,7 @@ public class Board extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 	private static int B_WIDTH = 300;
     private static int B_HEIGHT = 300;
-    public static int DOT_SIZE = 10;
-    private static int RAND_POS = 29;
+    public static int DOT_SIZE = 25;
     private static int DELAY = 140;
 
     private int apple_x;
@@ -57,19 +56,11 @@ public class Board extends JPanel implements ActionListener {
         this.add(apple2, BorderLayout.NORTH);
         
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
-        loadImages();
         initGame();
-    }
-
-    private void loadImages() {
-
-        //ImageIcon iia = new ImageIcon("src/resources/apple.png");
-        //apple = iia.getImage();
     }
 
     private void initGame() {
         
-        locateApple();
         System.out.println("initializátor");
         timer = new Timer(DELAY, this);
         timer.start();
@@ -132,23 +123,15 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    private void locateApple() {
-
-        int r = (int) (Math.random() * RAND_POS);
-        apple_x = ((r * DOT_SIZE));
-
-        r = (int) (Math.random() * RAND_POS);
-        apple_y = ((r * DOT_SIZE));
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
     	
         if (inGame) {
-
+        	
             checkApple();
             checkCollision();
             snake.move();
+            
         }
 
         repaint();

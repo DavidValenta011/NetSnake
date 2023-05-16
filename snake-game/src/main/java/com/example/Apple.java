@@ -9,7 +9,11 @@ import javax.swing.JComponent;
 
 import java.util.Random;
 
-
+/**
+ * 
+ * @author david
+ *
+ */
 public class Apple extends JComponent implements GameObject
 {
 	private static final long serialVersionUID = 1L;
@@ -23,6 +27,11 @@ public class Apple extends JComponent implements GameObject
 	
 	private Random random;
 	
+	/**
+	 * 
+	 * @param rangeX
+	 * @param rangeY
+	 */
 	public Apple(int rangeX, int rangeY) {
 		random = new Random();
 		this.rangeX = rangeX;
@@ -35,6 +44,9 @@ public class Apple extends JComponent implements GameObject
         img = Load.squareImage("src/resources/apple.png",  DOT_SIZE);
     }
 	
+	/**
+	 * 
+	 */
 	public void setRandomLocation() {
 		x = random.nextInt(rangeX);
 		y = random.nextInt(rangeY);

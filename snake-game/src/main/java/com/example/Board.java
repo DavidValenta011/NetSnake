@@ -15,6 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.sound.sampled.Clip;
 
+/**
+ * 
+ * @author david
+ *
+ */
 public class Board extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1L;
@@ -63,7 +68,7 @@ public class Board extends JPanel implements ActionListener {
         timer = new Timer(DELAY, this);
         timer.start();
         
-        snake2.initSnake(snake.getDirection(), 6, 6);
+        snake2.initSnake(snake.getDirection(), 8, 8);
     }
 
     @Override

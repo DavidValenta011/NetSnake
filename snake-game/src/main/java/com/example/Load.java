@@ -13,6 +13,12 @@ public class Load
 {
 	private static final int MAX_RETRIES = 3;
 
+	/**
+	 * 
+	 * @param imagePath
+	 * @param requiredSize
+	 * @return
+	 */
 	public static Image squareImage(String imagePath, int requiredSize) {
 		Image image = null;
 		boolean imageLoaded = false;
@@ -35,6 +41,11 @@ public class Load
 		return image;
 	}
 	
+	/**
+	 * 
+	 * @param soundPath
+	 * @return
+	 */
 	public static Clip sound(String soundPath) {
 		Clip clip = null;
 		boolean soundLoaded = false;

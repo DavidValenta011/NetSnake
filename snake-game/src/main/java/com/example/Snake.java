@@ -15,6 +15,11 @@ enum Direction {
 	Down
 }
 
+/**
+ * 
+ * @author david
+ *
+ */
 public class Snake extends JComponent implements GameObject {
     private static final long serialVersionUID = 1L;
     public Square[] squares;
@@ -27,6 +32,9 @@ public class Snake extends JComponent implements GameObject {
     private Image ball;
     private Image head;
 
+    /**
+     * 
+     */
     public Snake() {
         
         squares = new Square[(B_HEIGHT * B_WIDTH) / (DOT_SIZE * DOT_SIZE)];
@@ -36,6 +44,12 @@ public class Snake extends JComponent implements GameObject {
         initSnake(Direction.Left, 5, 5);
     }
 
+    /**
+     * 
+     * @param direction
+     * @param x
+     * @param y
+     */
     public void initSnake(Direction direction, int x, int y) {
         dots = 3;
 
@@ -76,7 +90,7 @@ public class Snake extends JComponent implements GameObject {
 
     public boolean CheckCollisions(GameObject other) {
     	if (other == this) {
-    		return checkCollision();
+    		return checkCollisionItself();
     	}
     	for (Square square : other.GetSquares()) {
     		for (int i = 0; i < dots; i++) {
@@ -87,6 +101,34 @@ public class Snake extends JComponent implements GameObject {
 		}
 		return false;
     }
+    
+    /**
+     * Checks if the snake collides with itself or the game border.
+     * @return Snake collides itself or game border
+     */
+    private boolean checkCollisionItself() {  
+        for (int z = dots; z > 0; z--) {
+
+            if ((z > 4) && (squares[0].x == squares[z].x) && (squares[0].y == squares[z].y)) {
+                return true;
+            }
+        }
+        if (squares[0].y * DOT_SIZE >= B_HEIGHT) {
+        	return true;
+        }
+        if (squares[0].y < 0) {
+        	return true;
+        }
+        if (squares[0].x * DOT_SIZE >= B_WIDTH) {
+        	return true;
+        }
+        if (squares[0].x < 0) {
+        	return true;
+        }
+        
+        return false;
+    }
+    
 	public ArrayList<Square> GetSquares() {
 		ArrayList<Square> result = new ArrayList<Square>();
 		for (int i = 0; i < dots; i++) {
@@ -95,6 +137,11 @@ public class Snake extends JComponent implements GameObject {
 		return result;
 	}
     
+	/**
+	 * Makes snake to move to neighbor position, which is determined
+	 * by snake direction.
+	 * 
+	 */
     public void move() {
         // Move the snake's body segments      
         for (int z = dots; z > 0; z--) {
@@ -122,42 +169,28 @@ public class Snake extends JComponent implements GameObject {
         }
     }
     
+    /**
+     * Setter for snake direction
+     * @param direction Direction to set
+     */
     public void ChangeDirection(Direction direction) {
     	this.direction = direction;
     }
     
+    /**
+     * Getter for snake direction
+     * @return Current direction of the snake
+     */
     public Direction getDirection() {
     	return direction;
     }
     
+    /**
+     * Increments snake length
+     */
     public void AddDot() {
     	dots++;
     	System.out.println("Actual score=" + (dots - 3));
-    }
-    
-    public boolean checkCollision() {
-
-    	boolean result = true;        
-        for (int z = dots; z > 0; z--) {
-
-            if ((z > 4) && (squares[0].x == squares[z].x) && (squares[0].y == squares[z].y)) {
-                result= false;
-            }
-        }
-        if (squares[0].y * DOT_SIZE >= B_HEIGHT) {
-        	result = false;
-        }
-        if (squares[0].y < 0) {
-        	result = false;
-        }
-        if (squares[0].x * DOT_SIZE >= B_WIDTH) {
-        	result = false;
-        }
-        if (squares[0].x < 0) {
-        	result = false;
-        }
-        
-        return !result;
     }
 }
 

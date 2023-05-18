@@ -1,4 +1,4 @@
-package com.example;
+package com.nprg013.snake;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -11,6 +11,10 @@ import javax.swing.JFrame;
 public class App extends JFrame {
 
     private static final long serialVersionUID = 1L;
+	public static final int B_WIDTH = 600;
+    public static final int B_HEIGHT = 600;
+    public static final int DOT_SIZE = 30;
+    public static int DELAY = 140; // Inverted value of game speed
 
 	public App() {
         
@@ -19,7 +23,7 @@ public class App extends JFrame {
     
     private void initUI() {
         
-        add(new Board());
+        add(new ObstaclePlacements());
         
         setResizable(false);
         pack();
@@ -34,7 +38,7 @@ public class App extends JFrame {
      * @param args
      */
     public static void main(String[] args) {
-        
+
         EventQueue.invokeLater(() -> {
             JFrame ex = new App();
             ex.setVisible(true);

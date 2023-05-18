@@ -1,4 +1,4 @@
-package com.example;
+package com.nprg013.snake;
 
 import javax.imageio.ImageIO;
 import java.awt.Image;

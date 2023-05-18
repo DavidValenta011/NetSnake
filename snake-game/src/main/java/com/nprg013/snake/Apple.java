@@ -1,4 +1,4 @@
-package com.example;
+package com.nprg013.snake;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,7 +37,6 @@ public class Apple extends JComponent implements GameObject
 		this.rangeX = rangeX;
 		this.rangeY = rangeY;
 		loadImages();
-		setRandomLocation();
 	}
 	
 	private void loadImages() {        
@@ -47,14 +46,20 @@ public class Apple extends JComponent implements GameObject
 	/**
 	 * 
 	 */
-	public void setRandomLocation() {
+	public void setRandomLocation(ArrayList<Square> occupiedPositions) {
 		x = random.nextInt(rangeX);
 		y = random.nextInt(rangeY);
+		for (int i = 0; i < occupiedPositions.size(); i++) {
+			if (x == occupiedPositions.get(i).x || y == occupiedPositions.get(i).y) {
+				setRandomLocation(occupiedPositions);
+				return;
+			}
+		}
 	}
 	
 	@Override
     public Dimension getPreferredSize() {
-        return new Dimension(300, 300);
+        return new Dimension(B_WIDTH, B_HEIGHT);
     }
 
     // Override the paintComponent method to render the snake

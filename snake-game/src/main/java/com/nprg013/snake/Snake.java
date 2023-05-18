@@ -1,4 +1,4 @@
-package com.example;
+package com.nprg013.snake;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,10 +24,12 @@ public class Snake extends JComponent implements GameObject {
     private static final long serialVersionUID = 1L;
     public Square[] squares;
     
+    private final Board board;
     
     private int dots;
     
     private Direction direction;
+    private final GameMode mode;
     
     private Image ball;
     private Image head;
@@ -35,8 +37,9 @@ public class Snake extends JComponent implements GameObject {
     /**
      * 
      */
-    public Snake() {
-        
+    public Snake(GameMode mode, Board board) {
+        this.mode = mode;
+        this.board = board;
         squares = new Square[(B_HEIGHT * B_WIDTH) / (DOT_SIZE * DOT_SIZE)];
 
         // Initialize the snake's starting position and direction
@@ -109,23 +112,25 @@ public class Snake extends JComponent implements GameObject {
     private boolean checkCollisionItself() {  
         for (int z = dots; z > 0; z--) {
 
-            if ((z > 4) && (squares[0].x == squares[z].x) && (squares[0].y == squares[z].y)) {
+            if ((z > 1) && (squares[0].x == squares[z].x) && (squares[0].y == squares[z].y)) {
                 return true;
             }
         }
-        if (squares[0].y * DOT_SIZE >= B_HEIGHT) {
-        	return true;
-        }
-        if (squares[0].y < 0) {
-        	return true;
-        }
-        if (squares[0].x * DOT_SIZE >= B_WIDTH) {
-        	return true;
-        }
-        if (squares[0].x < 0) {
-        	return true;
-        }
         
+        if (mode != GameMode.SinglePlayerInfinity) {
+	        if (squares[0].y * DOT_SIZE >= B_HEIGHT) {
+	        	return true;
+	        }
+	        if (squares[0].y < 0) {
+	        	return true;
+	        }
+	        if (squares[0].x * DOT_SIZE >= B_WIDTH) {
+	        	return true;
+	        }
+	        if (squares[0].x < 0) {
+	        	return true;
+	        }
+        }
         return false;
     }
     
@@ -136,6 +141,7 @@ public class Snake extends JComponent implements GameObject {
 		}
 		return result;
 	}
+	
     
 	/**
 	 * Makes snake to move to neighbor position, which is determined
@@ -143,17 +149,20 @@ public class Snake extends JComponent implements GameObject {
 	 * 
 	 */
     public void move() {
-        // Move the snake's body segments      
-        for (int z = dots; z > 0; z--) {
-            squares[z] = new Square(squares[z - 1].x, squares[z - 1].y);
+        if (mode != GameMode.SinglePlayerInfinity || !MoveToOppositeSite()) {
+            // Move the snake's body segments      
+            for (int z = dots; z > 0; z--) {
+                squares[z] = new Square(squares[z - 1].x, squares[z - 1].y);
+            }
+        	squares[0].Move(getDirection());
         }
-        
-        squares[0].Move(getDirection());
+        System.out.print("Snake position: x=" + squares[0].x + ", y=" + squares[0].y);
+        System.out.println("  Snake 2nd tail position: x=" + squares[1].x + ", y=" + squares[1].y);
     }
     
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(B_HEIGHT, B_WIDTH);
+        return new Dimension(B_WIDTH, B_HEIGHT);
     }
 
     // Override the paintComponent method to render the snake
@@ -191,6 +200,43 @@ public class Snake extends JComponent implements GameObject {
     public void AddDot() {
     	dots++;
     	System.out.println("Actual score=" + (dots - 3));
+    }
+    
+    private boolean MoveToOppositeSite() {
+    	boolean behind = false;
+    	if (squares[0].x < 0) {
+    		for (Square square : squares) {
+    			square.x += (B_WIDTH / DOT_SIZE);
+    		}
+    		//squares[0].x += (B_WIDTH / DOT_SIZE);
+			behind = true;
+		}
+		if (squares[0].x >= B_WIDTH /DOT_SIZE) {
+			for (Square square : squares) {
+    			square.x -= (B_WIDTH / DOT_SIZE);
+    		}
+			//squares[0].x -= (B_WIDTH / DOT_SIZE);
+			behind = true;
+		}
+		if (squares[0].y < 0) {
+			//squares[0].y += (B_HEIGHT / DOT_SIZE);
+			for (Square square : squares) {
+    			square.y += (B_HEIGHT / DOT_SIZE);
+    		}
+			behind = true;
+		}
+		if (squares[0].y >= B_HEIGHT / DOT_SIZE) {
+			//squares[0].y -= (B_HEIGHT / DOT_SIZE);
+			for (Square square : squares) {
+    			square.y -= (B_HEIGHT / DOT_SIZE);
+    		}
+			behind = true;
+		}
+		if (behind) {
+			board.obstacles.RegenerateRandomObstacles(this.GetSquares());
+			board.apple.setRandomLocation(board.obstacles.GetSquares());
+		}
+		return behind;
     }
 }
 

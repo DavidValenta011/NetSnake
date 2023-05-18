@@ -1,6 +1,8 @@
-package com.example;
+package com.nprg013.snake;
 
 import java.awt.BorderLayout;
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -15,29 +17,34 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.sound.sampled.Clip;
 
+enum GameMode {
+	SinglePlayer,
+	SinglePlayerInfinity,
+	MultiPlayerMaster,
+	MultiPlyerSlave
+}
+
 /**
  * 
  * @author david
  *
  */
-public class Board extends JPanel implements ActionListener {
-
+public class Board extends JPanel implements ActionListener, GameFrame {
     private static final long serialVersionUID = 1L;
-	public static final int B_WIDTH = 600;
-    public static final int B_HEIGHT = 300;
-    public static final int DOT_SIZE = 30;
-    private static int DELAY = 140; // Inverted value of game speed
 
-
-    private boolean inGame = true;
+	private boolean inGame = true;
 
     private Timer timer;
     Apple apple;
     Snake snake;
     Snake snake2;
+    Obstacles obstacles;
     Clip errorSound;
+    
+    GameMode mode;
 
     public Board() {
+    	mode = GameMode.SinglePlayerInfinity;
         initBoard();
     }
     
@@ -48,28 +55,40 @@ public class Board extends JPanel implements ActionListener {
         setFocusable(true);
 
         this.setLayout(null);
-        snake = new Snake();
+        snake = new Snake(mode, this);
         snake.setBounds(0, 0, B_WIDTH, B_HEIGHT);
         this.add(snake);
-        snake2 = new Snake();
+        snake2 = new Snake(mode, this);
         snake2.setBounds(0, 0, B_WIDTH, B_HEIGHT);
-        this.add(snake2);
+        //this.add(snake2);
         apple = new Apple(B_WIDTH / DOT_SIZE, B_HEIGHT / DOT_SIZE);
         apple.setBounds(0, 0, B_WIDTH, B_HEIGHT);
         this.add(apple, BorderLayout.NORTH);
         
+        obstacles = new Obstacles(ObstaclePlacementMode.Play);
+        obstacles.setBounds(0, 0, B_WIDTH, B_HEIGHT);
+        this.add(obstacles);
+        
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
-        initGame();
+        timer = new Timer(DELAY, this);
+        
+        errorSound = Load.sound("src/resources/WinXPError.wav");
+        
+        restartGame();
     }
 
     
-    private void initGame() {
-    	errorSound = Load.sound("src/resources/WinXPError.wav");
-        timer = new Timer(DELAY, this);
+    private void restartGame() {
+    	inGame = true;
+        
         timer.start();
         
+        snake.initSnake(snake.getDirection(), 5,  5);
+        obstacles.RegenerateRandomObstacles(snake.GetSquares());
+        apple.setRandomLocation(obstacles.GetSquares());
         snake2.initSnake(snake.getDirection(), 8, 8);
     }
+    
 
     @Override
     public void paintComponent(Graphics g) {
@@ -110,7 +129,7 @@ public class Board extends JPanel implements ActionListener {
     private void checkApple() {
         if (snake.CheckCollisions(apple)) {
         	snake.AddDot();
-        	apple.setRandomLocation();
+        	apple.setRandomLocation(obstacles.GetSquares());
         }
     }
 
@@ -118,7 +137,7 @@ public class Board extends JPanel implements ActionListener {
 
         //inGame = snake.checkCollision();
         
-        if (snake.CheckCollisions(snake)) {
+        if (snake.CheckCollisions(snake) || snake.CheckCollisions(obstacles)) {
         	playSound(errorSound);
         	inGame = false;
         }
@@ -135,7 +154,7 @@ public class Board extends JPanel implements ActionListener {
             checkApple();
             checkCollision();
             snake.move();
-            snake2.move();
+            //snake2.move();
         }
 
         repaint();
@@ -172,10 +191,7 @@ public class Board extends JPanel implements ActionListener {
             	snake2.ChangeDirection(Direction.Down);
             }
             if (key == KeyEvent.VK_SPACE) {
-            	/*inGame = true;
-            	initBoard();
-            	initGame();
-            	snake.initSnake(Direction.Left, 5, 5);*/
+            	restartGame();
             }
         }
     }
